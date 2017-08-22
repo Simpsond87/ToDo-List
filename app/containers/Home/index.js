@@ -15,7 +15,7 @@ export default class Home extends React.PureComponent {
   constructor(){
     super();
     this.state = {
-      listItems:["Make Crepes", "Watch the Solar Eclipse"],
+      listItems:["Make Crepes", "Watch the Solar Eclipse", "Debug To-Do List"],
       inputItem:""
     }
   }
@@ -43,14 +43,38 @@ export default class Home extends React.PureComponent {
   }
 
   handleEnter = (event) => {
-    console.log(event.keyCode);
+    //console.log(event.keyCode);
     if(event.keyCode === 13)
     {
         this.storeItem();
     }
   }
 
-  removeItem = () => {
+  strike = (event) => {
+    let item = event.target;
+    if (item.style.textDecoration === 'line-through')
+    {
+      item.style.textDecoration = 'none';
+    }
+    else
+    {
+      item.style.textDecoration = 'line-through';
+    }
+  }
+
+  removeItem = (index) => {
+    let listItems = this.state.listItems;
+    let inputItem = this.state.inputItem;
+
+    if(listItems !== null)
+    {
+      listItems.splice(index, 1);
+
+      this.setState({
+        listItems:listItems
+      })
+      this.forceUpdate();
+    }
   }
 
   render() {
@@ -62,13 +86,13 @@ export default class Home extends React.PureComponent {
             <input type="text" className="todoInput" onChange={this.handleItem} onKeyDown={this.handleEnter}
               value={this.state.inputItem}/>
             <input type="submit" value="Add to List" className="todoButton" onClick={this.storeItem} />
-            <input type="button" value="Remove From List" className="todoButton" onClick={this.removeItem}/>
         </div>
 
-        <div className="todoList">
+        <div>
           {this.state.listItems.map((item, index) => (
-            <div className="listItem" key={index}>
-              {item}
+            <div className="listItemBox" key={index}>
+              <input type="button" className="listItem" onClick={this.strike} value={item}/>
+              <input type="button" className="removeButton" onClick={() => this.removeItem(index)} value="Remove"/>
             </div>
           ))}
         </div>

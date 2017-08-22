@@ -14,12 +14,39 @@
   margin: 0 auto;
 }
 
+.removeButton {
+    padding: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    background: #00DDFF;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    display:inline-block;
+}
+
+.removeButton:hover {
+  background: #00DDAA;
+}
+
+.removeButton:active {
+  background: #00AAFF;
+}
+
 .listItem {
+  width:100%;
   background: #CCCCCC;
   padding: 15px;
-  margin: 10px;
+  margin: 10px auto;
   border-radius: 5px;
   font-variant: small-caps;
+}
+
+.listItemBox {
+  width: 50%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
 }
 
 .listItem:hover {
