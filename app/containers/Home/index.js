@@ -15,10 +15,10 @@ export default class Home extends React.PureComponent {
   constructor(){
     super();
     this.state = {
-      listItems:["Make Crepes", "Watch the Solar Eclipse", "Debug To-Do List"],
+      listItems:[],
       inputItem:""
     }
-  }
+  };
 
   storeItem = () => {
 
@@ -26,29 +26,29 @@ export default class Home extends React.PureComponent {
     let inputItem = this.state.inputItem;
 
     if(inputItem !== "")
-  {
-    listItems.push(inputItem);
+    {
+      listItems.push(inputItem);
 
-    this.setState({
-      listItems:listItems,
-      inputItem:""
-    })
-  }
-  }
+      this.setState({
+        listItems:listItems,
+        inputItem:""
+      })
+    }
+  };
 
   handleItem = (event) => {
     this.setState({
       inputItem: event.target.value
     })
-  }
+  };
 
   handleEnter = (event) => {
     //console.log(event.keyCode);
     if(event.keyCode === 13)
     {
-        this.storeItem();
+        this.storeTask();
     }
-  }
+  };
 
   strike = (event) => {
     let item = event.target;
@@ -60,7 +60,7 @@ export default class Home extends React.PureComponent {
     {
       item.style.textDecoration = 'line-through';
     }
-  }
+  };
 
   removeItem = (index) => {
     let listItems = this.state.listItems;
@@ -75,6 +75,62 @@ export default class Home extends React.PureComponent {
       })
       this.forceUpdate();
     }
+  };
+
+  destroyOne = (id, index) => {
+    fetch('http://localhost:8000/api/deleteOne/'+id, {
+      method:'POST',
+      mode:'no-cors'
+    })
+    .then(function(){
+      let listItems = this.state.listItems;
+      listItems.splice(index, 1);
+      this.setState({
+        listItems:listItems
+      })
+      this.forceUpdate();
+    }.bind(this))
+
+  };
+
+  getTasks = () => {
+    fetch('http://localhost:8000/api/getTasks', {
+      method:'GET'
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(json) {
+      this.setState({
+        listItems:json.tasks
+      })
+    }.bind(this))
+  };
+
+  storeTask = () => {
+    let data = new FormData();
+    data.append('taskContent', this.state.inputItem);
+
+    fetch('http://localhost:8000/api/storeTask', {
+      method:'POST',
+      body:data
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(json) {
+      let listItems = this.state.listItems;
+      listItems.push(json.task);
+      this.setState({
+        listItems:listItems,
+        inputItem:""
+      })
+      this.forceUpdate();
+    }.bind(this))
+  };
+
+  componentWillMount() {
+    this.getTasks();
   }
 
   render() {
@@ -85,14 +141,14 @@ export default class Home extends React.PureComponent {
         <div className="inputContainer">
             <input type="text" className="todoInput" onChange={this.handleItem} onKeyDown={this.handleEnter}
               value={this.state.inputItem}/>
-            <input type="submit" value="Add to List" className="todoButton" onClick={this.storeItem} />
+            <input type="submit" value="Add to List" className="todoButton" onClick={this.storeTask} />
         </div>
 
         <div>
           {this.state.listItems.map((item, index) => (
             <div className="listItemBox" key={index}>
-              <input type="button" className="listItem" onClick={this.strike} value={item}/>
-              <input type="button" className="removeButton" onClick={() => this.removeItem(index)} value="Remove"/>
+              <input type="button" className="listItem" onClick={this.strike} value={item.taskContent}/>
+              <input type="button" className="removeButton" onClick={() => this.destroyOne(item.id, index)} value="Remove"/>
             </div>
           ))}
         </div>
